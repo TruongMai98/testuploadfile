@@ -1,24 +1,66 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+
+import "./App.css";
+import UploadWidget from "./components/UploadWidget ";
 
 function App() {
+  const [url, updateUrl] = useState();
+  const [error, updateError] = useState();
+
+  /**
+   * handleOnUpload
+   */
+
+  function handleOnUpload(error, result, widget) {
+    if (error) {
+      updateError(error);
+      widget.close({
+        quiet: true,
+      });
+      return;
+    }
+    updateUrl(result?.info?.secure_url);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <main className="main">
+      <div className="container">
+        <h1 className="title">React &amp; Cloudinary Upload Widget</h1>
+      </div>
+
+      <div className="container">
+        <h2>Unsigned with Upload Preset</h2>
+        <UploadWidget onUpload={handleOnUpload}>
+          {({ open }) => {
+            function handleOnClick(e) {
+              e.preventDefault();
+              open();
+            }
+            return <button onClick={handleOnClick}>Upload an Image</button>;
+          }}
+        </UploadWidget>
+
+        {error && <p>{error}</p>}
+
+        {url && (
+          <>
+            <p>
+              <img src={url} alt="Uploaded resource" />
+            </p>
+            <p>{url}</p>
+          </>
+        )}
+      </div>
+
+      <div className="container">
+        <h2>Resources</h2>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          <a href="https://github.com/colbyfayock/cloudinary-examples/tree/main/examples/react-upload-widget-preset">
+            See the code on github.com.
+          </a>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      </div>
+    </main>
   );
 }
 
